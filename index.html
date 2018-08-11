@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>spaceplannr</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="bower_components/leaflet/dist/leaflet.css"/>
+    <link rel="stylesheet" href="bower_components/leaflet-draw/dist/leaflet.draw.css"/>
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="bower_components/sidebar-v2/css/leaflet-sidebar.css"/>
+    <script src="bower_components/leaflet/dist/leaflet.js"></script>
+    <script src="bower_components/leaflet-draw/dist/leaflet.draw.js"></script>
+    <script src="bower_components/sidebar-v2/js/leaflet-sidebar.js"></script>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body, #map {
+            height: 100%;
+            font: 10pt "Helvetica Neue", Arial, Helvetica, sans-serif;
+        }
+
+        .lorem {
+            font-style: italic;
+            color: #AAA;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebarv2 Setup -->
+    <div id="sidebar" class="sidebar collapsed">
+        <!-- Nav tabs -->
+        <div class="sidebar-tabs">
+            <ul role="tablist">
+                <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+                <li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li>
+                <li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>
+            </ul>
+
+            <ul role="tablist">
+                <li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
+            </ul>
+        </div>
+
+        <!-- Tab panes -->
+        <div class="sidebar-content">
+            <div class="sidebar-pane" id="home">
+                <h1 class="sidebar-header">
+                    Floor Details
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+                <p>23 Industrial Rd, Suite 10</p>
+                <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+                    invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
+                    dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
+                    labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et
+                    ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+            </div>
+
+            <div class="sidebar-pane" id="profile">
+                <h1 class="sidebar-header">Profile<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+                <p>John Doe</p>
+                <p class="lorem">@jdoe</p>
+                <p class="lorem">john.doe@company.com</p>
+            </div>
+
+            <div class="sidebar-pane" id="messages">
+                <h1 class="sidebar-header">Messages<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+
+            <div class="sidebar-pane" id="settings">
+                <h1 class="sidebar-header">Settings<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- leaflet map setup -->
+    <div id="map" class="sidebar-map"></div>
+    <script>
+        // create the map
+        var map = L.map('map', {
+            center: [0, 0],
+            zoom: 9
+        });
+
+        // create the image
+        var imageUrl = 'floorplans/Sample_Floorplan.svg',
+            imageBounds = [[-1, -1], [1, 1]];
+        L.imageOverlay(imageUrl, imageBounds).addTo(map);
+
+        // add in draw components
+        var drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+        var drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: drawnItems
+            }
+        });
+        map.addControl(drawControl);
+
+        // add draw layers upon creation
+        map.on(L.Draw.Event.CREATED, function (event) {
+            var layer = event.layer;
+            layer.bindTooltip("John Doe");
+            layer.on({
+                click: function (e) {
+                    sidebar.open("profile");
+                    L.DomEvent.stop(e); // kill event
+                }
+            });
+            drawnItems.addLayer(layer);
+        });
+        // if we didn't click anything else, close the sidebar
+        map.on('click', function () {
+            sidebar.close();
+        });
+
+        var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
+    </script>
+</body>
+</html>
