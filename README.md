@@ -9,5 +9,7 @@ https://jdrews.github.io/spaceplannr/
 
 ## Deployment
 1. Download source and extract to webapp directory
-2. `bower install`
-3. Enjoy! 
+2. Make sure you have `npm` installed
+3. `npm install -g yarn`
+4. `yarn install` to get all dependencies
+5. Enjoy! 
