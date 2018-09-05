@@ -3,7 +3,8 @@
     "@bower_components/font-awesome": "FortAwesome/Font-Awesome#^4.1.0",
     "@bower_components/leaflet": "Leaflet/Leaflet#>=0.7.0",
     "@bower_components/leaflet-draw": "Leaflet/Leaflet.draw#^1.0.2",
-    "@bower_components/sidebar-v2": "Turbo87/sidebar-v2#^0.4.0"
+    "@bower_components/sidebar-v2": "Turbo87/sidebar-v2#^0.4.0",
+    "pouchdb": "^7.0.0"
   },
   "engines": {
     "yarn": ">= 1.0.0"

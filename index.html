@@ -8,27 +8,17 @@
     <link rel="stylesheet" href="node_modules/@bower_components/leaflet-draw/dist/leaflet.draw.css"/>
     <link rel="stylesheet" href="node_modules/@bower_components/font-awesome/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="node_modules/@bower_components/sidebar-v2/css/leaflet-sidebar.css"/>
+    <link rel="stylesheet" href="css/app.css"/>
     <script src="node_modules/@bower_components/leaflet/dist/leaflet.js"></script>
     <script src="node_modules/@bower_components/leaflet-draw/dist/leaflet.draw.js"></script>
     <script src="node_modules/@bower_components/sidebar-v2/js/leaflet-sidebar.js"></script>
-    <style>
-        body {
-            padding: 0;
-            margin: 0;
-        }
-
-        html, body, #map {
-            height: 100%;
-            font: 10pt "Helvetica Neue", Arial, Helvetica, sans-serif;
-        }
-
-        .lorem {
-            font-style: italic;
-            color: #AAA;
-        }
-    </style>
+    <script src="node_modules/pouchdb/dist/pouchdb.js"></script>
 </head>
 <body>
+    <div id="sync-wrapper">
+        <div id="sync-success">Currently syncing</div>
+        <div id="sync-error">There was a problem syncing</div>
+    </div>
     <!-- Sidebarv2 Setup -->
     <div id="sidebar" class="sidebar collapsed">
         <!-- Nav tabs -->
@@ -79,46 +69,6 @@
 
     <!-- leaflet map setup -->
     <div id="map" class="sidebar-map"></div>
-    <script>
-        // create the map
-        var map = L.map('map', {
-            center: [0, 0],
-            zoom: 9
-        });
-
-        // create the image
-        var imageUrl = 'floorplans/Sample_Floorplan.svg',
-            imageBounds = [[-1, -1], [1, 1]];
-        L.imageOverlay(imageUrl, imageBounds).addTo(map);
-
-        // add in draw components
-        var drawnItems = new L.FeatureGroup();
-        map.addLayer(drawnItems);
-        var drawControl = new L.Control.Draw({
-            edit: {
-                featureGroup: drawnItems
-            }
-        });
-        map.addControl(drawControl);
-
-        // add draw layers upon creation
-        map.on(L.Draw.Event.CREATED, function (event) {
-            var layer = event.layer;
-            layer.bindTooltip("John Doe");
-            layer.on({
-                click: function (e) {
-                    sidebar.open("profile");
-                    L.DomEvent.stop(e); // kill event
-                }
-            });
-            drawnItems.addLayer(layer);
-        });
-        // if we didn't click anything else, close the sidebar
-        map.on('click', function () {
-            sidebar.close();
-        });
-
-        var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
-    </script>
+    <script src="js/app.js"></script>
 </body>
 </html>
