@@ -12,6 +12,22 @@ html, body, #map {
     font-style: italic;
     color: #AAA;
 }
+
+.sidebar-tabs > li.active, .sidebar-tabs > ul > li.active {
+    color: #fff;
+    background-color: rgb(33,150,243); }
+
+.sidebar-header {
+    margin: -10px -20px 0;
+    height: 40px;
+    padding: 0 20px;
+    line-height: 40px;
+    font-size: 14.4pt;
+    color: #fff;
+    background-color: rgb(33,150,243); }
+.sidebar-right .sidebar-header {
+    padding-left: 40px; }
+
 #sync-error, #sync-success {
     display: none;
 }
