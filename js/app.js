@@ -66,8 +66,8 @@ var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
 // ====== setup form =======
 function saveProfile() {
     var name = $("#profile-name").val();
-    var chat = $("#profile-chat").val();
     var email = $("#profile-email").val();
+    var chat = $("#profile-chat").val();
     var layerid = $("#layer-id").val();
     var layergeojson = $("#layer-geo-json").val();
     pushToDatabase(name, chat, email, layerid, layergeojson);
@@ -101,8 +101,8 @@ function pushToDatabase (name, chat, email, layerid, layergeojson) {
         _id: layerid,
         timestamp: new Date().toISOString(),
         name: name,
-        chat: chat,
         email: email,
+        chat: chat,
         geojson: layergeojson
     };
     db.put(data, function callback(err, result) {
