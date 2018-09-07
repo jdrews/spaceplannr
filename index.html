@@ -17,6 +17,7 @@
     <script src="node_modules/material-design-lite/material.min.js"></script>
     <script src="node_modules/pouchdb/dist/pouchdb.js"></script>
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="js/helper.js"></script>
 </head>
 <body>
     <div id="sync-wrapper">
@@ -69,9 +70,8 @@
                         <label class="mdl-textfield__label" for="profile-chat">Chat</label>
                     </div>
                     <input type="hidden" id="layer-id" name="layer-id" value="">
-                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="profile-save">
-                        Save
-                    </button>
+                    <!--<input type="hidden" id="layer-geo-json" name="layer-geo-json" value="">-->
+                    <button type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="profile-save" onclick="saveProfile()">Save</button>
                 </form>
             </div>
 

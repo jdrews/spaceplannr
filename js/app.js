@@ -21,22 +21,38 @@ var drawControl = new L.Control.Draw({
 });
 map.addControl(drawControl);
 
+// add getLayerById to leaflet FeatureGroup
+L.FeatureGroup.include({
+    getLayerById: function (id) {
+        for (var i in this._layers) {
+            if (this._layers[i].id == id) {
+                return this._layers[i];
+            }
+        }
+    }
+});
+
 // add draw layers upon creation
 map.on(L.Draw.Event.CREATED, function (event) {
+    clearProfileSidebar();
     var layer = event.layer;
-    //layer.id = //todo: generate a UUID to assign to this layer. Set the layer-id hidden field to this value for after the user clicks save. look at node-uuid library.
-    // layer.bindTooltip("John Doe");
+    layer.id = generateUuid(); // generate a UUID to assign to this layer.
+    $("#layer-id").val(layer.id); // Set the layer-id hidden field to this value for after the user clicks save.
+    layer.bindTooltip(""); // note: to be updated once user inputs data in sidebar.
     layer.on({
         click: function (e) {
-            // todo: update the profile sidebar with user clicked data
+            // todo: update the profile sidebar with user clicked data -- get from pouchdb entry with layer.id uuid
             sidebar.open("profile");
             L.DomEvent.stop(e); // kill event
         }
     });
-    //todo: make profile sidebar editable and add the save button
     console.log("layer.id = " + layer.id);
-    $("#layer-id").val(layer.id);
-    console.log("layer-id = " + $("layer-id").val());
+    console.log("layer-id = " + $("#layer-id").val());
+
+    var layerGeoJSON = JSON.stringify(layer.toGeoJSON());
+    console.log("layerGeoJSON = " + layerGeoJSON);
+    $("#layer-geo-json").val(layerGeoJSON);
+
     sidebar.open("profile");
     drawnItems.addLayer(layer);
 });
@@ -48,12 +64,18 @@ map.on('click', function () {
 var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
 
 // ====== setup form =======
-$("#profile-save").click(function () {
-    var name = $("profile-name").val();
-    var chat = $("profile-chat").val();
-    var email = $("profile-email").val();
-
-});
+function saveProfile() {
+    var name = $("#profile-name").val();
+    var chat = $("#profile-chat").val();
+    var email = $("#profile-email").val();
+    var layerid = $("#layer-id").val();
+    var layergeojson = $("#layer-geo-json").val();
+    pushToDatabase(name, chat, email, layerid, layergeojson);
+    var layer = drawnItems.getLayerById(layerid);
+    layer.setTooltipContent(name)
+    sidebar.close();
+    clearProfileSidebar();
+}
 
 // ====== begin pouchdb =======
 
@@ -62,27 +84,30 @@ var db = new PouchDB('spaceplannr');
 var remoteCouch = 'http://dbsvr:5984/spaceplannr';
 
 function syncError() {
-    syncDom.setAttribute('data-sync-state', 'error');
+    // syncDom.setAttribute('data-sync-state', 'error');
+    console.log("syncing")
 }
 
 function sync() {
-    syncDom.setAttribute('data-sync-state', 'syncing');
+    // syncDom.setAttribute('data-sync-state', 'syncing');
+    console.log("syncing")
     var opts = {live: true};
     db.replicate.to(remoteCouch, opts, syncError);
     db.replicate.from(remoteCouch, opts, syncError);
 }
 
-function addData (text) {
+function pushToDatabase (name, chat, email, layerid, layergeojson) {
     var data = {
-        _id: new Date().toISOString(),
-        name: "myname",
-        chathandle: "chathandle",
-        email: "email",
-        geojson: "geojson"
+        _id: layerid,
+        timestamp: new Date().toISOString(),
+        name: name,
+        chat: chat,
+        email: email,
+        geojson: layergeojson
     };
     db.put(data, function callback(err, result) {
         if (!err) {
-            console.log('Successfully posted a data!\n' + data);
+            console.log('Successfully posted to database!\n' + data.toString());
         }
     });
 }
@@ -90,5 +115,5 @@ function addData (text) {
 if (remoteCouch) {
     sync();
 }
-
-addData("New Data: " + new Date().toISOString());
+// restore
+//L.geoJSON(JSON.parse(shape_for_db)).addTo(mymap);
