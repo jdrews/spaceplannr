@@ -56,6 +56,16 @@ map.on(L.Draw.Event.CREATED, function (event) {
     sidebar.open("profile");
     drawnItems.addLayer(layer);
 });
+
+// pick up when someone edits
+map.on(L.Draw.Event.EDITED, function (event) {
+    var layers = event.layers;
+    layers.eachLayer(function (layer) {
+        //todo: store this change in db
+        console.log("layer change! --> " + layer.id + "; " + JSON.stringify(layer.toGeoJSON()))
+    });
+});
+
 // if we didn't click anything else, close the sidebar
 map.on('click', function () {
     sidebar.close();
