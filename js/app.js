@@ -66,8 +66,12 @@ map.on(L.Draw.Event.CREATED, function (event) {
 map.on(L.Draw.Event.EDITED, function (event) {
     var layers = event.layers;
     layers.eachLayer(function (layer) {
-        //todo: store this change in db
-        console.log("layer change! --> " + layer.id + "; " + JSON.stringify(layer.toGeoJSON()))
+        //store this change in db
+        var layerid = layer.id;
+        var layergeojson = JSON.stringify(layer.toGeoJSON());
+        console.log("layer change! --> " + layerid + "; " + layergeojson);
+        //store this change in db
+        pushToDatabase(layerid, layergeojson)
     });
 });
 
@@ -95,7 +99,7 @@ function saveProfile() {
     var chat = $("#profile-chat").val();
     var layerid = $("#layer-id").val();
     var layergeojson = $("#layer-geo-json").val();
-    pushToDatabase(name, chat, email, layerid, layergeojson);
+    pushToDatabase(layerid, layergeojson, name, chat, email);
     var layer = drawnItems.getLayerById(layerid);
     layer.setTooltipContent(name);
     sidebar.close();

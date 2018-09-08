@@ -27,11 +27,16 @@ function updateProfileSidebar(doc) {
     $("#layer-geo-json").val(doc.geojson);
 }
 
-function pushToDatabase (name, chat, email, layerid, layergeojson) {
+function pushToDatabase (layerid, layergeojson, name, chat, email) {
     db.get(layerid).catch(function (err) { // get latest object in db
         if (err.name === 'not_found') {
             console.log("pushToDatabase: This is a new object!");
-            return { // build our new object and pass to put function
+            // check for null or undefined and set defaults
+            if (typeof name === 'undefined' || name == null) { name = ""; }
+            if (typeof email === 'undefined' || email == null) { email = ""; }
+            if (typeof chat === 'undefined' || chat == null) { chat = ""; }
+            if (typeof layergeojson === 'undefined' || layergeojson == null) { layergeojson = ""; }
+            return { // build our new object and pass to 'put' function
                 _id: layerid,
                 timestamp: new Date().toISOString(),
                 name: name,
@@ -46,10 +51,11 @@ function pushToDatabase (name, chat, email, layerid, layergeojson) {
     }).then(function (doc) {
         // update the existing doc with new values
         doc.timestamp = new Date().toISOString();
-        doc.name = name;
-        doc.email = email;
-        doc.chat = chat;
-        doc.geojson = layergeojson;
+        // check for null or undefined before updating the doc; only update what needs updating
+        if (name) { doc.name = name; }
+        if (email) { doc.email = email; }
+        if (chat) { doc.chat = chat; }
+        if (layergeojson) { doc.geojson = layergeojson; }
         db.put(doc, function callback(err, result) {
             if (!err) {
                 console.log('Successfully posted to database!\n' + JSON.stringify(doc));
