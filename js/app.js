@@ -106,3 +106,19 @@ if (remoteCouch && (config.enableSync === true)) {
 }
 
 loadFromDatabase();
+
+// todo: handle changes coming from some other client. Skipping for now.
+// db.changes({
+//     since: 'now',
+//     live: true,
+//     include_docs: true
+// }).on('change', function (change) {
+//     // change.id contains the doc id, change.doc contains the doc
+//     if (change.deleted) {
+//         // document was deleted
+//     } else {
+//         // document was added/modified
+//     }
+// }).on('error', function (err) {
+//     // handle errors
+// });
