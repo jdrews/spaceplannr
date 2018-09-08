@@ -27,6 +27,19 @@ function updateProfileSidebar(doc) {
     $("#layer-geo-json").val(doc.geojson);
 }
 
+function saveProfile() {
+    var name = $("#profile-name").val();
+    var email = $("#profile-email").val();
+    var chat = $("#profile-chat").val();
+    var layerid = $("#layer-id").val();
+    var layergeojson = $("#layer-geo-json").val();
+    pushToDatabase(layerid, layergeojson, name, chat, email);
+    var layer = drawnItems.getLayerById(layerid);
+    layer.setTooltipContent(name);
+    sidebar.close();
+    clearProfileSidebar();
+}
+
 function pushToDatabase (layerid, layergeojson, name, chat, email) {
     db.get(layerid).catch(function (err) { // get latest object in db
         if (err.name === 'not_found') {

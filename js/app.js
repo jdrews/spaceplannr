@@ -7,7 +7,7 @@ var map = L.map('map', {
 });
 
 // create the image
-var imageUrl = 'floorplans/Sample_Floorplan.svg',
+var imageUrl = config.floorplan,
     imageBounds = [[-1, -1], [1, 1]];
 L.imageOverlay(imageUrl, imageBounds).addTo(map);
 
@@ -82,25 +82,11 @@ map.on(L.Draw.Event.EDITSTART, function (event) {
 
 var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
 
-// ====== setup form =======
-function saveProfile() {
-    var name = $("#profile-name").val();
-    var email = $("#profile-email").val();
-    var chat = $("#profile-chat").val();
-    var layerid = $("#layer-id").val();
-    var layergeojson = $("#layer-geo-json").val();
-    pushToDatabase(layerid, layergeojson, name, chat, email);
-    var layer = drawnItems.getLayerById(layerid);
-    layer.setTooltipContent(name);
-    sidebar.close();
-    clearProfileSidebar();
-}
-
 // ====== begin pouchdb =======
 
 var syncDom = document.getElementById('sync-wrapper');
-var db = new PouchDB('spaceplannr');
-var remoteCouch = 'http://dbsvr:5984/spaceplannr';
+var db = new PouchDB(config.database_name);
+var remoteCouch = config.couchdb_server;
 
 function syncError() {
     // syncDom.setAttribute('data-sync-state', 'error');
@@ -115,7 +101,7 @@ function sync() {
     db.replicate.from(remoteCouch, opts, syncError);
 }
 
-if (remoteCouch) {
+if (remoteCouch && (config.enableSync === true)) {
     sync();
 }
 
