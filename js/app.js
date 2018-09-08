@@ -29,6 +29,7 @@ L.FeatureGroup.include({
                 return this._layers[i];
             }
         }
+        return null;
     }
 });
 
@@ -39,18 +40,7 @@ map.on(L.Draw.Event.CREATED, function (event) {
     layer.id = generateUuid(); // generate a UUID to assign to this layer.
     $("#layer-id").val(layer.id); // Set the layer-id hidden field to this value for after the user clicks save.
     layer.bindTooltip(""); // note: to be updated once user inputs data in sidebar.
-    layer.on({
-        click: function (event) {
-            // update the profile sidebar with user clicked data -- get from pouchdb entry with layer.id uuid
-            var layerid = event.sourceTarget.id;
-            db.get(layerid).then(function (doc) {
-                console.log("Retrieved doc from db: " + JSON.stringify(doc));
-                updateProfileSidebar(doc);
-            });
-            sidebar.open("profile");
-            L.DomEvent.stop(event); // kill event
-        }
-    });
+    addLayerOnClick(layer);
     console.log("layer.id = " + layer.id);
     console.log("layer-id = " + $("#layer-id").val());
 
@@ -128,5 +118,5 @@ function sync() {
 if (remoteCouch) {
     sync();
 }
-// restore
-//L.geoJSON(JSON.parse(shape_for_db)).addTo(mymap);
+
+loadFromDatabase();

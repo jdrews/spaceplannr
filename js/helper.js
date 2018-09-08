@@ -12,17 +12,17 @@ function generateUuid() {
 }
 
 function clearProfileSidebar() {
-    $("#profile-name").val("");
-    $("#profile-chat").val("");
-    $("#profile-email").val("");
+    document.getElementById("profile-name").parentElement.MaterialTextfield.change("");
+    document.getElementById("profile-chat").parentElement.MaterialTextfield.change("");
+    document.getElementById("profile-email").parentElement.MaterialTextfield.change("");
     $("#layer-id").val("");
     $("#layer-geo-json").val("");
 }
 
 function updateProfileSidebar(doc) {
-    $("#profile-name").val(doc.name);
-    $("#profile-chat").val(doc.chat);
-    $("#profile-email").val(doc.email);
+    document.getElementById("profile-name").parentElement.MaterialTextfield.change(doc.name);
+    document.getElementById("profile-chat").parentElement.MaterialTextfield.change(doc.chat);
+    document.getElementById("profile-email").parentElement.MaterialTextfield.change(doc.email);
     $("#layer-id").val(doc._id);
     $("#layer-geo-json").val(doc.geojson);
 }
@@ -64,5 +64,50 @@ function pushToDatabase (layerid, layergeojson, name, chat, email) {
     }).catch(function (err) {
         console.log("pushToDatabase: error upon put");
         throw err;
+    });
+}
+
+function loadFromDatabase() {
+    db.allDocs({
+        include_docs: true
+    }).then(function (result) {
+        console.log("loadFromDatabase received " + result.rows.length + " records. processing... ");
+        var i = 0;
+        // handle result
+        result.rows.map(function (row) {
+            i++;
+            var doc = row.doc;
+            var layerid = doc._id;
+            var layergeojson = doc.geojson;
+            var name = doc.name;
+            console.log(i + "; name:" + name + ", layerid: " + layerid + ", geojson: " + layergeojson);
+            if (drawnItems.getLayerById(layerid)) {
+                console.log("already on the map")
+            } else {
+                console.log("loading onto map")
+                var layer = L.geoJSON(JSON.parse(layergeojson));
+                layer.id = layerid;
+                addLayerOnClick(layer);
+                layer.bindTooltip(name);
+                layer.addTo(drawnItems);
+            }
+        });
+    }).catch(function (err) {
+        console.log(err);
+    });
+}
+
+function addLayerOnClick(layer) {
+    layer.on({
+        click: function (event) {
+            // update the profile sidebar with user clicked data -- get from pouchdb entry with layer.id uuid
+            var layerid = event.target.id;
+            db.get(layerid).then(function (doc) {
+                console.log("Retrieved doc from db: " + JSON.stringify(doc));
+                updateProfileSidebar(doc);
+            });
+            sidebar.open("profile");
+            L.DomEvent.stop(event); // kill event
+        }
     });
 }
