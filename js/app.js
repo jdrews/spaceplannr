@@ -40,10 +40,15 @@ map.on(L.Draw.Event.CREATED, function (event) {
     $("#layer-id").val(layer.id); // Set the layer-id hidden field to this value for after the user clicks save.
     layer.bindTooltip(""); // note: to be updated once user inputs data in sidebar.
     layer.on({
-        click: function (e) {
-            // todo: update the profile sidebar with user clicked data -- get from pouchdb entry with layer.id uuid
+        click: function (event) {
+            // update the profile sidebar with user clicked data -- get from pouchdb entry with layer.id uuid
+            var layerid = event.sourceTarget.id;
+            db.get(layerid).then(function (doc) {
+                console.log("Retrieved doc from db: " + JSON.stringify(doc));
+                updateProfileSidebar(doc);
+            });
             sidebar.open("profile");
-            L.DomEvent.stop(e); // kill event
+            L.DomEvent.stop(event); // kill event
         }
     });
     console.log("layer.id = " + layer.id);
@@ -71,6 +76,16 @@ map.on('click', function () {
     sidebar.close();
 });
 
+// if we start drawing, close the sidebar
+map.on(L.Draw.Event.DRAWSTART, function (event) {
+    sidebar.close();
+});
+
+// if we start editing, close the sidebar
+map.on(L.Draw.Event.EDITSTART, function (event) {
+    sidebar.close();
+});
+
 var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
 
 // ====== setup form =======
@@ -82,7 +97,7 @@ function saveProfile() {
     var layergeojson = $("#layer-geo-json").val();
     pushToDatabase(name, chat, email, layerid, layergeojson);
     var layer = drawnItems.getLayerById(layerid);
-    layer.setTooltipContent(name)
+    layer.setTooltipContent(name);
     sidebar.close();
     clearProfileSidebar();
 }
@@ -104,22 +119,6 @@ function sync() {
     var opts = {live: true};
     db.replicate.to(remoteCouch, opts, syncError);
     db.replicate.from(remoteCouch, opts, syncError);
-}
-
-function pushToDatabase (name, chat, email, layerid, layergeojson) {
-    var data = {
-        _id: layerid,
-        timestamp: new Date().toISOString(),
-        name: name,
-        email: email,
-        chat: chat,
-        geojson: layergeojson
-    };
-    db.put(data, function callback(err, result) {
-        if (!err) {
-            console.log('Successfully posted to database!\n' + data.toString());
-        }
-    });
 }
 
 if (remoteCouch) {
