@@ -86,7 +86,7 @@ var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
 
 var syncDom = document.getElementById('sync-wrapper');
 var db = new PouchDB(config.database_name);
-var remoteCouch = config.couchdb_server;
+var remoteCouch;
 
 function syncError() {
     // syncDom.setAttribute('data-sync-state', 'error');
@@ -101,11 +101,15 @@ function sync() {
     db.replicate.from(remoteCouch, opts, syncError);
 }
 
-if (remoteCouch && (config.enableSync === true)) {
+if (config.enableSync && config.couchdb_server) {
+    remoteCouch = config.couchdb_server;
     sync();
 }
 
 loadFromDatabase();
+
+$("#location > p").text(config.location);
+$("#location-details > p").text(config.locationdetails);
 
 // todo: handle changes coming from some other client. Skipping for now.
 // db.changes({
