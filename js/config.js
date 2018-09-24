@@ -24,7 +24,7 @@ config.couchdb_server = 'http://dbsvr:5984/spaceplannr';
 config.enableSync = true;
 
 // location information
-config.location = "Earth, Solar System, Milky Way, Virgo, Laniakea, Universe";
+config.location = "Earth, Solar System, Milky Way, Local Group, Virgo Supercluster, Laniakea, Universe";
 
 // location details (or readme)
 config.locationdetails = "Welcome to spaceplannr. To get started click on a marker or add a new one using the " +
