@@ -12,4 +12,5 @@ https://jdrews.github.io/spaceplannr/
 2. Make sure you have `npm` installed
 3. `npm install -g yarn`
 4. `yarn install` to get all dependencies
+5. Modify js/config.js
 5. Enjoy! 
