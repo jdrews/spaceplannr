@@ -147,6 +147,22 @@ function loadFromDatabase() {
     });
 }
 
+function deleteFromDatabase (layerid) {
+    db.get(layerid).catch(function (err) { // get latest object in db
+        if (err.name === 'not_found') {
+            console.log("deleteFromDatabase: Doesn't exist in the database!");
+        } else { // hm, some other error
+            console.log("deleteFromDatabase: error upon get");
+            throw err;
+        }
+    }).then(function (doc) {
+        return db.remove(doc);
+    }).catch(function (err) {
+        console.log("deleteFromDatabase: error upon put");
+        throw err;
+    });
+}
+
 function addLayerOnClick(layer) {
     layer.on({
         click: function (event) {
@@ -156,8 +172,22 @@ function addLayerOnClick(layer) {
                 console.log("Retrieved doc from db: " + JSON.stringify(doc));
                 updateProfileSidebar(doc);
             });
-            sidebar.open("profile");
+            if (config.sidebarEnabled) {
+                sidebar.open("profile");
+            }
             L.DomEvent.stop(event); // kill event
         }
     });
+}
+
+function enableSave() {
+    var saveButton = document.getElementById('profile-save');
+    saveButton.removeAttribute("disabled");
+    componentHandler.upgradeElement(saveButton);
+}
+
+function disableSave() {
+    var saveButton = document.getElementById('profile-save');
+    saveButton.setAttribute("disabled","");
+    componentHandler.upgradeElement(saveButton);
 }

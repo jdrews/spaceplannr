@@ -65,22 +65,53 @@ map.on(L.Draw.Event.EDITED, function (event) {
     });
 });
 
+// pick up when someone deletes
+map.on(L.Draw.Event.DELETED, function (event) {
+    sidebar.close();
+    var layers = event.layers;
+    layers.eachLayer(function (layer) {
+        //store this change in db
+        var layerid = layer.id;
+        var layergeojson = JSON.stringify(layer.toGeoJSON());
+        console.log("layer delete! --> " + layerid + "; " + layergeojson);
+        drawnItems.removeLayer(layer);
+        //store this change in db
+        deleteFromDatabase(layerid)
+    });
+});
+
 // if we didn't click anything else, close the sidebar
 map.on('click', function () {
     sidebar.close();
 });
 
-// if we start drawing, close the sidebar
 map.on(L.Draw.Event.DRAWSTART, function (event) {
     sidebar.close();
 });
 
-// if we start editing, close the sidebar
 map.on(L.Draw.Event.EDITSTART, function (event) {
     sidebar.close();
+    disableSave();
+    config.sidebarEnabled = false;
 });
 
-//TODO: handle deleting from DB
+map.on(L.Draw.Event.EDITSTOP, function (event) {
+    sidebar.close();
+    enableSave();
+    config.sidebarEnabled = true;
+});
+
+map.on(L.Draw.Event.DELETESTART, function (event) {
+    sidebar.close();
+    disableSave();
+    config.sidebarEnabled = false;
+});
+
+map.on(L.Draw.Event.DELETESTOP, function (event) {
+    sidebar.close();
+    enableSave();
+    config.sidebarEnabled = true;
+});
 
 var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
 
@@ -107,6 +138,8 @@ if (config.enableSync && config.couchdb_server) {
     remoteCouch = config.couchdb_server;
     sync();
 }
+
+config.sidebarEnabled = true;
 
 loadFromDatabase();
 
