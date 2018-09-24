@@ -15,6 +15,11 @@ function clearProfileSidebar() {
     document.getElementById("profile-name").parentElement.MaterialTextfield.change("");
     document.getElementById("profile-chat").parentElement.MaterialTextfield.change("");
     document.getElementById("profile-email").parentElement.MaterialTextfield.change("");
+    document.getElementById("profile-title").parentElement.MaterialTextfield.change("");
+    document.getElementById("profile-department").parentElement.MaterialTextfield.change("");
+    document.getElementById("profile-phone").parentElement.MaterialTextfield.change("");
+    document.getElementById("profile-extension").parentElement.MaterialTextfield.change("");
+    document.getElementById("profile-details").parentElement.MaterialTextfield.change("");
     $("#layer-id").val("");
     $("#layer-geo-json").val("");
 }
@@ -23,6 +28,11 @@ function updateProfileSidebar(doc) {
     document.getElementById("profile-name").parentElement.MaterialTextfield.change(doc.name);
     document.getElementById("profile-chat").parentElement.MaterialTextfield.change(doc.chat);
     document.getElementById("profile-email").parentElement.MaterialTextfield.change(doc.email);
+    document.getElementById("profile-title").parentElement.MaterialTextfield.change(doc.title);
+    document.getElementById("profile-department").parentElement.MaterialTextfield.change(doc.department);
+    document.getElementById("profile-phone").parentElement.MaterialTextfield.change(doc.phone);
+    document.getElementById("profile-extension").parentElement.MaterialTextfield.change(doc.extension);
+    document.getElementById("profile-details").parentElement.MaterialTextfield.change(doc.details);
     $("#layer-id").val(doc._id);
     $("#layer-geo-json").val(doc.geojson);
 }
@@ -31,16 +41,21 @@ function saveProfile() {
     var name = $("#profile-name").val();
     var email = $("#profile-email").val();
     var chat = $("#profile-chat").val();
+    var title = $("#profile-title").val();
+    var department = $("#profile-department").val();
+    var phone = $("#profile-phone").val();
+    var extension = $("#profile-extension").val();
+    var details = $("#profile-details").val();
     var layerid = $("#layer-id").val();
     var layergeojson = $("#layer-geo-json").val();
-    pushToDatabase(layerid, layergeojson, name, chat, email);
+    pushToDatabase(layerid, layergeojson, name, chat, email, title, department, phone, extension, details);
     var layer = drawnItems.getLayerById(layerid);
     layer.setTooltipContent(name);
     sidebar.close();
     clearProfileSidebar();
 }
 
-function pushToDatabase (layerid, layergeojson, name, chat, email) {
+function pushToDatabase (layerid, layergeojson, name, chat, email, title, department, phone, extension, details) {
     db.get(layerid).catch(function (err) { // get latest object in db
         if (err.name === 'not_found') {
             console.log("pushToDatabase: This is a new object!");
@@ -48,6 +63,11 @@ function pushToDatabase (layerid, layergeojson, name, chat, email) {
             if (typeof name === 'undefined' || name == null) { name = ""; }
             if (typeof email === 'undefined' || email == null) { email = ""; }
             if (typeof chat === 'undefined' || chat == null) { chat = ""; }
+            if (typeof title === 'undefined' || title == null) { title = ""; }
+            if (typeof department === 'undefined' || department == null) { department = ""; }
+            if (typeof phone === 'undefined' || phone == null) { phone = ""; }
+            if (typeof extension === 'undefined' || extension == null) { extension = ""; }
+            if (typeof details === 'undefined' || details == null) { details = ""; }
             if (typeof layergeojson === 'undefined' || layergeojson == null) { layergeojson = ""; }
             return { // build our new object and pass to 'put' function
                 _id: layerid,
@@ -55,6 +75,11 @@ function pushToDatabase (layerid, layergeojson, name, chat, email) {
                 name: name,
                 email: email,
                 chat: chat,
+                title: title,
+                department: department,
+                phone: phone,
+                extension: extension,
+                details: details,
                 geojson: layergeojson
             };
         } else { // hm, some other error
@@ -68,6 +93,11 @@ function pushToDatabase (layerid, layergeojson, name, chat, email) {
         if (name) { doc.name = name; }
         if (email) { doc.email = email; }
         if (chat) { doc.chat = chat; }
+        if (title) { doc.title = title; }
+        if (department) { doc.department = department; }
+        if (phone) { doc.phone = phone; }
+        if (extension) { doc.extension = extension; }
+        if (details) { doc.details = details; }
         if (layergeojson) { doc.geojson = layergeojson; }
         db.put(doc, function callback(err, result) {
             if (!err) {
