@@ -80,6 +80,8 @@ map.on(L.Draw.Event.EDITSTART, function (event) {
     sidebar.close();
 });
 
+//TODO: handle deleting from DB
+
 var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
 
 // ====== begin pouchdb =======

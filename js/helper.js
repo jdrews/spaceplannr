@@ -127,8 +127,15 @@ function loadFromDatabase() {
             if (drawnItems.getLayerById(layerid)) {
                 console.log("already on the map")
             } else {
-                console.log("loading onto map")
-                var layer = L.geoJSON(JSON.parse(layergeojson));
+                console.log("loading onto map");
+                // Leaflet-draw does not like LayerGroups on it's edit.featureGroup (drawnItems).
+                // Get the actual layer
+                var layergroup = L.geoJSON(JSON.parse(layergeojson)); // returns a LayerGroup
+                var layers = layergroup.getLayers();
+                if (layers.length !== 1) {
+                    console.error("More than one layer in this layergroup: " + layers.toString())
+                }
+                var layer = layers[0]; // the actual layer
                 layer.id = layerid;
                 addLayerOnClick(layer);
                 layer.bindTooltip(name);
