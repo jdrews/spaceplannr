@@ -109,6 +109,12 @@ function pushToDatabase (layerid, layergeojson, name, chat, email, title, depart
         db.put(doc, function callback(err, result) {
             if (!err) {
                 console.log('Successfully posted to database!\n' + JSON.stringify(doc));
+                var notification = document.querySelector('.mdl-js-snackbar');
+                notification.MaterialSnackbar.showSnackbar(
+                    {
+                        message: 'Saved!'
+                    }
+                );
             }
         });
     }).catch(function (err) {

@@ -133,7 +133,13 @@ var remoteCouch;
 
 function syncError() {
     // syncDom.setAttribute('data-sync-state', 'error');
-    console.log("syncing")
+    console.log("sync problem!");
+    var notification = document.querySelector('.mdl-js-snackbar');
+    notification.MaterialSnackbar.showSnackbar(
+        {
+            message: 'Unable to access remote database. Make sure remote couchdb is running.'
+        }
+    );
 }
 
 function sync() {
