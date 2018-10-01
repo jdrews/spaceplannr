@@ -53,11 +53,11 @@ function saveProfile() {
     layer.setTooltipContent(name);
     var alttext = [name, title, department, phone, extension].join(', ');
     layer.alt = alttext;
-    layer.title = doc.name;
+    layer.title = name;
     layer.options.alt = alttext;
-    layer.options.title = doc.name;
+    layer.options.title = name;
     layer.feature.properties.alt = alttext;
-    layer.feature.properties.title = doc.name;
+    layer.feature.properties.title = name;
     sidebar.close();
     clearProfileSidebar();
 }
