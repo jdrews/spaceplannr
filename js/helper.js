@@ -51,6 +51,13 @@ function saveProfile() {
     pushToDatabase(layerid, layergeojson, name, chat, email, title, department, phone, extension, details);
     var layer = drawnItems.getLayerById(layerid);
     layer.setTooltipContent(name);
+    var alttext = [name, title, department, phone, extension].join(', ');
+    layer.alt = alttext;
+    layer.title = doc.name;
+    layer.options.alt = alttext;
+    layer.options.title = doc.name;
+    layer.feature.properties.alt = alttext;
+    layer.feature.properties.title = doc.name;
     sidebar.close();
     clearProfileSidebar();
 }
@@ -139,12 +146,20 @@ function loadFromDatabase() {
                 layer.id = layerid;
                 addLayerOnClick(layer);
                 layer.bindTooltip(name);
+                var alttext = [doc.name, doc.title, doc.department, doc.phone, doc.extension].join(', ');
+                layer.alt = alttext;
+                layer.title = doc.name;
+                layer.options.alt = alttext;
+                layer.options.title = doc.name;
+                layer.feature.properties.alt = alttext;
+                layer.feature.properties.title = doc.name;
                 layer.addTo(drawnItems);
             }
         });
     }).catch(function (err) {
         console.log(err);
     });
+    controlSearch.setLayer(drawnItems);
 }
 
 function deleteFromDatabase (layerid) {

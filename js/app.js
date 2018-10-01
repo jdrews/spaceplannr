@@ -33,6 +33,16 @@ L.FeatureGroup.include({
     }
 });
 
+var controlSearch = new L.Control.Search({
+    position:'topleft',
+    propertyName: 'alt',
+    layer: drawnItems,
+    initial: false,
+    textErr: "Not Found",
+    autoCollapse: true
+});
+map.addControl( controlSearch );
+
 // add draw layers upon creation
 map.on(L.Draw.Event.CREATED, function (event) {
     clearProfileSidebar();
